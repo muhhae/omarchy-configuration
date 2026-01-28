@@ -1,0 +1,87 @@
+#!/usr/bin/python3
+
+import subprocess
+import time
+import sys
+import json
+
+
+def get_player_data():
+    try:
+        data = subprocess.run(
+            [
+                "playerctl",
+                "metadata",
+                "--format",
+                '{ "status": "{{status}}", "title": "{{title}}", "artist": "{{artist}}", "length": {{mpris:length}}, "position": {{position}}, "volume": {{volume}} }',
+            ],
+            capture_output=True,
+            text=True,
+        )
+        # print(data.args)
+        j = data.stdout.strip()
+        metadata = json.loads(j)
+        return metadata
+
+    except Exception:
+        return None
+
+
+bar_len = 10
+
+fill_char_passed = "━"
+fill_char_progress = "─"
+indicator = "●"
+
+# fill_char_passed = "█"
+# fill_char_progress = "░"
+# indicator = "█"
+
+border_left = "⟦"
+border_right = "⟧"
+
+border_left = "("
+border_right = ")"
+
+border_left = ""
+border_right = ""
+
+icon = ""
+icon = ""
+
+# "format": "   {title} - {artist}",
+# "format-paused": " ⏸  {title} - {artist}",
+
+
+while True:
+    data = get_player_data()
+
+    if data:
+        if data.get("length", 0) > 0:
+            pct = min(1.0, max(0.0, data["position"] / data["length"]))
+        else:
+            pct = 0
+
+        spot_to_fill = bar_len - 1
+        filled_count = round(pct * spot_to_fill)
+        empty_count = spot_to_fill - filled_count
+
+        output = {}
+        icon = icon if data["status"] == "Playing" else "⏸"
+        progress_bar = (
+            border_left
+            + fill_char_passed * filled_count
+            + indicator
+            + fill_char_progress * empty_count
+            + border_right
+        )
+        output["text"] = f" {icon}  {progress_bar}  {data['title']} - {data['artist']}"
+        output["tooltip"] = "in progress"
+        # output["debug_pct"] = pct
+        # output["debug_filled_count"] = filled_count
+        print(f"{json.dumps(output, ensure_ascii=False)}")
+    else:
+        print("No Player")
+
+    sys.stdout.flush()
+    time.sleep(1)
