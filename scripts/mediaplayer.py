@@ -16,15 +16,23 @@ def get_player_data():
                 "spotify,%any",
                 "metadata",
                 "--format",
-                '{ "status": "{{status}}", "title": "{{title}}", "artist": "{{artist}}", "length": {{mpris:length}}, "position": {{position}}, "volume": {{volume}} }',
+                "{{status}}|{{title}}|{{artist}}|{{mpris:length}}|{{position}}|{{volume}}",
             ],
             capture_output=True,
             text=True,
-        )
-        # print(data.args)
-        j = data.stdout.strip()
-        metadata = json.loads(j)
-        return metadata
+            check=True,
+        ).stdout.strip()
+        if data:
+            parts = data.split("|")
+            metadata = {
+                "status": parts[0],
+                "title": parts[1],
+                "artist": parts[2],
+                "length": int(parts[3]) if parts[3] else 0,
+                "position": int(parts[4]) if parts[4] else 0,
+                "volume": float(parts[5]) if parts[5] else 0.0,
+            }
+            return metadata
 
     except Exception:
         return None
@@ -58,6 +66,7 @@ icon = ""
 
 while True:
     data = get_player_data()
+    output = {}
 
     if data:
         if data.get("length", 0) > 0:
@@ -69,7 +78,6 @@ while True:
         filled_count = round(pct * spot_to_fill)
         empty_count = spot_to_fill - filled_count
 
-        output = {}
         status = icon if data["status"] == "Playing" else "⏸"
         progress_bar = (
             border_left
@@ -90,9 +98,9 @@ while True:
             + "middle-click: previous song\n"
             + "scroll: volume+/-"
         )
-        print(f"{json.dumps(output, ensure_ascii=False)}")
     else:
-        print("No Player")
+        output["text"] = "  No Player"
 
+    print(f"{json.dumps(output, ensure_ascii=False)}")
     sys.stdout.flush()
     time.sleep(1)
