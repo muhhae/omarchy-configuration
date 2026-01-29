@@ -4,6 +4,7 @@ import subprocess
 import time
 import sys
 import json
+import html
 
 
 def get_player_data():
@@ -11,6 +12,8 @@ def get_player_data():
         data = subprocess.run(
             [
                 "playerctl",
+                "-p",
+                "spotify,%any",
                 "metadata",
                 "--format",
                 '{ "status": "{{status}}", "title": "{{title}}", "artist": "{{artist}}", "length": {{mpris:length}}, "position": {{position}}, "volume": {{volume}} }',
@@ -67,7 +70,7 @@ while True:
         empty_count = spot_to_fill - filled_count
 
         output = {}
-        icon = icon if data["status"] == "Playing" else "⏸"
+        status = icon if data["status"] == "Playing" else "⏸"
         progress_bar = (
             border_left
             + fill_char_passed * filled_count
@@ -75,10 +78,18 @@ while True:
             + fill_char_progress * empty_count
             + border_right
         )
-        output["text"] = f" {icon}  {progress_bar}  {data['title']} - {data['artist']}"
-        output["tooltip"] = "in progress"
-        # output["debug_pct"] = pct
-        # output["debug_filled_count"] = filled_count
+        position_str = time.strftime("%M:%S", time.gmtime(data["position"] / 1_000_000))
+        length_str = time.strftime("%M:%S", time.gmtime(data["length"] / 1_000_000))
+
+        output["text"] = html.escape(
+            f" {status}  {position_str} {progress_bar} {length_str}  {data['title']} - {data['artist']}"
+        )
+        output["tooltip"] = (
+            "left-click: play/pause\n"
+            + "right-click: next song\n"
+            + "middle-click: previous song\n"
+            + "scroll: volume+/-"
+        )
         print(f"{json.dumps(output, ensure_ascii=False)}")
     else:
         print("No Player")

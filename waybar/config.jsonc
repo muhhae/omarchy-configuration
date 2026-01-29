@@ -7,12 +7,14 @@
   "modules-left": ["custom/omarchy", "hyprland/workspaces", "custom/media"],
   "modules-center": [
     "clock",
+    "custom/mako",
     "custom/update",
     "custom/voxtype",
     "custom/screenrecording-indicator",
   ],
   "modules-right": [
-    "group/tray-expander",
+    "tray",
+    // "group/tray-expander",
     "bluetooth",
     "network",
     "pulseaudio",
@@ -58,7 +60,12 @@
     "signal": 7,
     "interval": 21600,
   },
-
+  "custom/mako": {
+    "interval": 1,
+    "exec": "if [ \"$(makoctl mode)\" = \"do-not-disturb\" ]; then echo \" \"; else echo \" \"; fi",
+    "on-click": "makoctl mode | grep -q do-not-disturb && makoctl mode -s default || makoctl mode -s do-not-disturb",
+    "format": " {}",
+  },
   "cpu": {
     "interval": 5,
     "format": "󰍛",
@@ -110,10 +117,6 @@
     "return-type": "json",
     "tooltip": true,
     "max-length": 80,
-    "format-icons": {
-      "Playing": "",
-      "Paused": "⏸",
-    },
     "exec": "~/personal/omarchy-configuration/scripts/mediaplayer.py",
     "on-click": "playerctl -p spotify,%any play-pause",
     "on-click-right": "playerctl -p spotify,%any next",
