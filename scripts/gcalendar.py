@@ -66,10 +66,9 @@ while True:
                     formatted = datetime.strptime(
                         current_date,
                         "%Y-%m-%d",
-                    ).strftime("%b %d")
-                    tooltip.append(formatted)
-                    tooltip.append("------")
-                tooltip.append(f"{event.start_time} {event.title}")
+                    ).strftime("%b %-d")
+                    tooltip.append(f"<b>{formatted}</b>")
+                tooltip.append(f"  {event.start_time} {html.escape(event.title)}")
             tooltip = "\n".join(tooltip)
 
     except Exception:
@@ -77,7 +76,7 @@ while True:
         tooltip = f"Err: {Exception}"
 
     out["text"] = html.escape(f"  {icon} {text}")
-    out["tooltip"] = html.escape(tooltip)
+    out["tooltip"] = tooltip
     print(json.dumps(out, ensure_ascii=False))
     sys.stdout.flush()
     time.sleep(1)
