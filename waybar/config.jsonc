@@ -7,13 +7,14 @@
   "modules-left": ["custom/omarchy", "hyprland/workspaces", "custom/media"],
   "modules-center": [
     "clock",
-    "custom/mako",
     "custom/update",
     "custom/voxtype",
     "custom/screenrecording-indicator",
   ],
   "modules-right": [
+    "custom/gcalendar",
     "tray",
+    "custom/mako",
     // "group/tray-expander",
     "bluetooth",
     "network",
@@ -52,6 +53,13 @@
     "on-click-right": "xdg-terminal-exec",
     "tooltip-format": "Omarchy Menu\n\nSuper + Alt + Space",
   },
+  "custom/gcalendar": {
+    "exec": "~/personal/omarchy-configuration/scripts/gcalendar.py",
+    "format": "  {text}  ",
+    "return-type": "json",
+    "tooltip": true,
+    "on-click": "omarchy-launch-webapp \"https://calendar.google.com\"",
+  },
   "custom/update": {
     "format": "",
     "exec": "omarchy-update-available",
@@ -64,7 +72,7 @@
     "interval": 1,
     "exec": "if [ \"$(makoctl mode)\" = \"do-not-disturb\" ]; then echo \" \"; else echo \" \"; fi",
     "on-click": "makoctl mode | grep -q do-not-disturb && makoctl mode -s default || makoctl mode -s do-not-disturb",
-    "format": " {}",
+    "format": "{}  ",
   },
   "cpu": {
     "interval": 5,
@@ -74,11 +82,11 @@
   },
   "clock": {
     // "interval": 1,
-    "format": "{:L%I:%M %p   %a   %b %d, %Y}",
-    "format-alt": "{:L%d %B W%V %Y}",
+    "format": "{:L%a   %b %d   %I:%M %p}",
+    // "format-alt": "{:L%d %B W%V %Y}",
     "tooltip": true,
-    "tooltip-format": "<tt><small>{calendar}</small></tt>",
-    "on-click-right": "omarchy-launch-floating-terminal-with-presentation omarchy-tz-select",
+    "tooltip-format": "right-click: select timezone",
+    "on-click": "omarchy-launch-floating-terminal-with-presentation omarchy-tz-select",
   },
   "network": {
     "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
