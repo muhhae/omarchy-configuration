@@ -79,4 +79,4 @@ while True:
     out["tooltip"] = tooltip
     print(json.dumps(out, ensure_ascii=False))
     sys.stdout.flush()
-    time.sleep(1)
+    time.sleep(300)
