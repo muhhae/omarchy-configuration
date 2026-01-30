@@ -6,21 +6,24 @@
   "height": 26,
   "modules-left": ["custom/omarchy", "hyprland/workspaces", "custom/media"],
   "modules-center": [
-    "clock",
     "custom/update",
     "custom/voxtype",
     "custom/screenrecording-indicator",
+    "clock",
+    "custom/spacer",
+    "custom/spacer",
+    "custom/gcalendar",
   ],
   "modules-right": [
-    "custom/gcalendar",
     "tray",
-    "custom/mako",
-    // "group/tray-expander",
     "bluetooth",
     "network",
     "pulseaudio",
     "cpu",
     "battery",
+    "custom/idle",
+    "custom/spacer",
+    "custom/mako",
   ],
   "hyprland/workspaces": {
     "on-click": "activate",
@@ -47,6 +50,15 @@
       "5": [],
     },
   },
+  "custom/spacer": {
+    "format": " ",
+  },
+  "custom/sep1": {
+    "format": "|",
+  },
+  "custom/sep2": {
+    "format": "",
+  },
   "custom/omarchy": {
     "format": "<span font='omarchy'>\ue900</span>",
     "on-click": "omarchy-menu",
@@ -55,7 +67,7 @@
   },
   "custom/gcalendar": {
     "exec": "~/personal/omarchy-configuration/scripts/gcalendar.py",
-    "format": "  {text}  ",
+    "format": "{text}  ",
     "return-type": "json",
     "tooltip": true,
     "on-click": "omarchy-launch-webapp \"https://calendar.google.com\"",
@@ -68,11 +80,20 @@
     "signal": 7,
     "interval": 21600,
   },
+  "custom/idle": {
+    "interval": "once",
+    "exec": "~/personal/omarchy-configuration/scripts/idle_status.sh",
+    "on-click": "omarchy-toggle-idle; pkill -SIGRTMIN+6 waybar",
+    "format": " {} ",
+    "signal": 6,
+  },
   "custom/mako": {
-    "interval": 1,
-    "exec": "if [ \"$(makoctl mode)\" = \"do-not-disturb\" ]; then echo \" \"; else echo \" \"; fi",
+    "interval": "once",
+    "exec": "if [ \"$(makoctl mode)\" = \"do-not-disturb\" ]; then echo \"\"; else echo \"\"; fi; pkill -SIGRTMIN+5 waybar",
     "on-click": "makoctl mode | grep -q do-not-disturb && makoctl mode -s default || makoctl mode -s do-not-disturb",
-    "format": "{}  ",
+    "on-click-right": "makoctl dismiss -a",
+    "format": " {} ",
+    "signal": 5,
   },
   "cpu": {
     "interval": 5,
@@ -82,8 +103,7 @@
   },
   "clock": {
     // "interval": 1,
-    "format": "{:L%a   %b %d   %I:%M %p}",
-    // "format-alt": "{:L%d %B W%V %Y}",
+    "format": "{:L%a, %b %d   %I:%M %p}",
     "tooltip": true,
     "tooltip-format": "right-click: select timezone",
     "on-click": "omarchy-launch-floating-terminal-with-presentation omarchy-tz-select",
