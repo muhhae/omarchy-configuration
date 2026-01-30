@@ -75,7 +75,7 @@ while True:
         text = f"Err: {Exception}"
         tooltip = f"Err: {Exception}"
 
-    out["text"] = html.escape(f"  {icon} {text}")
+    out["text"] = html.escape(f"{icon} {text}")
     out["tooltip"] = tooltip
     print(json.dumps(out, ensure_ascii=False))
     sys.stdout.flush()
