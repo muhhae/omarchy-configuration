@@ -10,11 +10,9 @@
     "custom/voxtype",
     "custom/screenrecording-indicator",
     "clock",
-    "custom/spacer",
-    "custom/spacer",
-    "custom/gcalendar",
   ],
   "modules-right": [
+    "custom/gcalendar",
     "tray",
     "bluetooth",
     "network",
