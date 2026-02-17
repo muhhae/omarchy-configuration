@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+from os import abort
 import subprocess
 import time
 import sys
@@ -82,7 +83,9 @@ for line in playerctl.stdout:
         f" {status}  {position_str} {progress_bar} {length_str}  {metadata['title']} - {metadata['artist']}"
     )
     output["tooltip"] = (
-        "left-click: play/pause\n"
+        f"Artist: {metadata['artist']}\n"
+        + f"Title: {metadata['title']}\n\n"
+        + "left-click: play/pause\n"
         + "right-click: next song\n"
         + "middle-click: previous song\n"
         + "scroll: volume+/-"
