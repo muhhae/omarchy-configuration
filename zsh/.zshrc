@@ -109,6 +109,20 @@ function y() {
 	rm -f -- "$tmp"
 }
 
+function watch_mmd() {
+    if [ -z "$1" ]; then
+        echo "Error: Please provide a file name."
+        return 1
+    fi
+
+    local input="$1"
+    local output="${input%.*}.pdf"
+
+    echo "Watching $input... (Output: $output)"
+
+    echo "$input" | entr -c sh -c "mmdc -i '$input' -o '$output' --pdfFit && notify-send -u low 'Mermaid Build' '✅ Success: $output' || notify-send -u critical 'Mermaid Build' '❌ Failed: $input'"
+}
+
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
