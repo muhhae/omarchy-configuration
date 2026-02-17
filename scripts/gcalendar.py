@@ -10,6 +10,7 @@ import sys
 import pandas as pd
 import io
 
+title_max_len = 24
 icon = " "
 while True:
     out = {}
@@ -18,9 +19,7 @@ while True:
             [
                 "/usr/bin/gcalcli",
                 "agenda",
-                "today",
                 "--tsv",
-                '"+30 days"',
             ],
             capture_output=True,
             text=True,
@@ -28,6 +27,7 @@ while True:
         ).stdout.strip()
 
         events = pd.read_csv(io.StringIO(gcalcli), delimiter="\t")
+        print(events)
 
         today = date.today().isoformat()
 
@@ -35,7 +35,7 @@ while True:
         now = datetime.now()
 
         today_events = events.query("start_date == @today and dt_end > @now")
-        upcoming_events = events.query("dt_end > @now")
+        upcoming_events = events.query("dt_end > @now or dt_end.isna()")
 
         if today_events.empty:
             text = "No events today!"
@@ -53,7 +53,14 @@ while True:
                 .lstrip("0")
             )
 
-            text = f"{closest_event['title']} at {start_time} - {end_time}"
+            title = closest_event["title"]
+            title = (
+                (title[: title_max_len - 3] + "...")
+                if len(title) > title_max_len
+                else title
+            )
+
+            text = f"{title} at {start_time} - {end_time}"
 
         if upcoming_events.empty:
             tooltip = "No upcoming events"
@@ -68,7 +75,12 @@ while True:
                         "%Y-%m-%d",
                     ).strftime("%b %-d")
                     tooltip.append(f"<b>{formatted}</b>")
-                tooltip.append(f"  {event.start_time} {html.escape(event.title)}")
+                event_date = (
+                    f"{event.start_time} - {event.end_time}"
+                    if pd.notna(event.end_time)
+                    else "All day"
+                )
+                tooltip.append(f"  {event_date:<{13}} {html.escape(event.title)}")
             tooltip = "\n".join(tooltip)
 
     except Exception:
@@ -80,3 +92,4 @@ while True:
     print(json.dumps(out, ensure_ascii=False))
     sys.stdout.flush()
     time.sleep(300)
+    # time.sleep(1)
