@@ -10,7 +10,7 @@ import sys
 import pandas as pd
 import io
 
-title_max_len = 24
+title_max_len = 8
 icon = " "
 while True:
     out = {}

@@ -13,3 +13,4 @@ vim.keymap.set("n", "vW", "viW", { desc = "Select current WORD" })
 vim.keymap.set("n", "vs", "viws", { desc = "Select current word and replace" })
 
 vim.keymap.set({ "i", "v" }, "<C-c>", "<Esc>")
+vim.keymap.set("t", "<Esc><Esc>", [[<C-\><C-n>]], { noremap = true })

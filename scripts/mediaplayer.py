@@ -50,6 +50,11 @@ playerctl = subprocess.Popen(
 
 for line in playerctl.stdout:
     parts = line.split("|")
+    if len(parts) < 2:
+        output = {"text": " No song playing"}
+        print(f"{json.dumps(output, ensure_ascii=False)}")
+        sys.stdout.flush()
+        continue
     metadata = {
         "status": parts[0],
         "title": parts[1],
@@ -79,9 +84,13 @@ for line in playerctl.stdout:
     length_str = time.strftime("%M:%S", time.gmtime(metadata["length"] / 1_000_000))
 
     output = {}
-    output["text"] = html.escape(
-        f" {status}  {position_str} {progress_bar} {length_str}  {metadata['title']} - {metadata['artist']}"
+    output["text"] = f" {status} "
+    output["text"] += (
+        f" {position_str} {progress_bar} {length_str} "
+        if metadata["status"] == "Playing"
+        else ""
     )
+    output["text"] += html.escape(f" {metadata['title']} - {metadata['artist']}")
     output["tooltip"] = (
         f"Artist: {metadata['artist']}\n"
         + f"Title: {metadata['title']}\n\n"

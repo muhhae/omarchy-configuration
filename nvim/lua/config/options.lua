@@ -8,3 +8,4 @@ vim.opt.swapfile = false
 vim.opt.wrap = false
 -- vim.opt.textwidth = 80
 -- vim.opt.formatoptions:append("t")
+vim.opt.scrolloff = 12

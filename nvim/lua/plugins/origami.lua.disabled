@@ -1,0 +1,21 @@
+return {
+  "chrisgrieser/nvim-origami",
+  event = "VeryLazy",
+  opts = {}, -- required even when using default config
+  init = function()
+    vim.opt.foldlevel = 99
+    vim.opt.foldlevelstart = 99
+    vim.keymap.set("n", "<Left>", function()
+      require("origami").h()
+    end)
+    vim.keymap.set("n", "<Right>", function()
+      require("origami").l()
+    end)
+    vim.keymap.set("n", "<Home>", function()
+      require("origami").caret()
+    end)
+    vim.keymap.set("n", "<End>", function()
+      require("origami").dollar()
+    end)
+  end,
+}

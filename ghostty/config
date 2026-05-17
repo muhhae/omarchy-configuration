@@ -1,15 +1,19 @@
 # Dynamic theme colors
 config-file = ?"~/.config/omarchy/current/theme/ghostty.conf"
+background-opacity = 0.65
 
 # Font
 font-family = "CaskaydiaMono Nerd Font"
 font-style = Regular
-font-size = 11
+font-size = 13
 
 # Window
+# window-colorspace = linear-srgb
+# minimum-contrast = 0
+window-decoration = none
 window-theme = ghostty
-window-padding-x = 14
-window-padding-y = 14
+window-padding-x = 2
+window-padding-y = 2
 confirm-close-surface=false
 resize-overlay = never
 gtk-toolbar-style = flat
@@ -32,3 +36,6 @@ keybind = super+control+shift+alt+arrow_right=resize_split:right,100
 
 # Slowdown mouse scrolling
 mouse-scroll-multiplier = 0.95
+
+# Fix general slowness on hyprland (https://github.com/ghostty-org/ghostty/discussions/3224)
+async-backend = epoll

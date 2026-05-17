@@ -1,38 +1,6 @@
 #!/usr/bin/env python3
 import subprocess
-from collections import defaultdict
 import json
-
-icons = {
-    "Slack": "",
-}
-
-all_workspaces = json.loads(
-    subprocess.run(
-        [
-            "hyprctl",
-            "workspaces",
-            "-j",
-        ],
-        capture_output=True,
-        text=True,
-        check=True,
-    ).stdout.strip()
-)
-max_id = max([w["id"] for w in all_workspaces])
-
-active_workspace = json.loads(
-    subprocess.run(
-        [
-            "hyprctl",
-            "activeworkspace",
-            "-j",
-        ],
-        capture_output=True,
-        text=True,
-        check=True,
-    ).stdout.strip()
-)
 
 windows = json.loads(
     subprocess.run(
@@ -47,47 +15,74 @@ windows = json.loads(
     ).stdout.strip()
 )
 
-max_title_length = 16
-workspaces = [[] for _ in range(max_id)]
+ICONS = {
+    "firefox": "󰈹",
+    "google-chrome": "",
+    "chromium": "",
+    "zen": "󰈹",
+    "cursor": "󰨞",
+    "code": "󰨞",
+    "Alacritty": "",
+    "kitty": "",
+    "foot": "",
+    "ghostty": "",
+    "com.mitchellh.ghostty": "",
+    "spotify": "",
+    "slack": "",
+    "discord": "󰙯",
+    "thunar": "󰉋",
+    "nautilus": "󰉋",
+    "vlc": "󰕼",
+}
+
+def get_icon(klass):
+    for key, icon in ICONS.items():
+        if key in klass.lower():
+            return icon
+    return "󱂬"
+
+entries = []
+addresses = []
 for w in windows:
-    w_id = w["workspace"]["id"] - 1
-    title = w["initialTitle"]
-    # title = w[""]
-    if len(title) > max_title_length:
-        title = title[: max_title_length - 3] + "..."
-    workspaces[w_id].append(title)
+    if not w["mapped"]:
+        continue
+    
+    addresses.append(w["address"])
+    title = w["title"]
+    klass = w["class"]
+    initial_title = w["initialTitle"]
+    
+    icon = get_icon(klass)
+    
+    # Elegant format: ICON  InitialTitle  •  WindowTitle
+    entry = f"{icon}  {initial_title}  •  {title}"
+    entries.append(entry)
 
-active_workspace_id = int(active_workspace["id"])
-print(active_workspace_id)
-entries = [
-    f"{k + 1}: {', '.join(v) if len(v) > 0 else '(empty)'}"
-    for k, v in enumerate(workspaces)
-    # if k + 1 != active_workspace_id
-]
-
-selected = subprocess.run(
+res = subprocess.run(
     [
         "walker",
         "--dmenu",
+        "--index",
         "-p",
-        "Select workspace:",
-        # "-q",
-        # "-c",
-        # "3",
+        "Select window:",
     ],
     input="\n".join(entries),
     capture_output=True,
     text=True,
-    check=True,
-).stdout.strip()
+)
 
-if selected != "":
-    selected_window = selected[: selected.find(":")]
-    subprocess.run(
-        [
-            "hyprctl",
-            "dispatch",
-            "workspace",
-            selected_window,
-        ]
-    )
+if res.returncode == 0 and res.stdout.strip() != "":
+    try:
+        idx = int(res.stdout.strip())
+        selected_address = addresses[idx]
+        subprocess.run(
+            [
+                "hyprctl",
+                "dispatch",
+                "focuswindow",
+                f"address:{selected_address}",
+            ],
+            check=True,
+        )
+    except (ValueError, IndexError):
+        pass
